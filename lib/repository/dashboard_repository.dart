@@ -5,18 +5,18 @@ import 'package:milvik_flutter_app/common/constants.dart';
 class DashboardRepository {
   Future fetchDoctorsList() async {
     try {
-    var url = Uri.parse(Constants.doctorListApiUrl);
-    http.Response response = await http.get(url);
+      var url = Uri.parse(Constants.doctorListApiUrl);
+      http.Response response = await http.get(url);
 
       if (response.statusCode == 200) {
         String data = response.body;
         var decodedData = jsonDecode(data);
         return decodedData;
       } else {
-        return 'failed';
+        return null;
       }
     } catch (e) {
-      return 'failed';
+      return null;
     }
   }
 }

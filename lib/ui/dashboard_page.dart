@@ -52,7 +52,9 @@ class DashboardPage extends StatelessWidget {
                   itemCount: doctorDetails.data.length,
                   padding: EdgeInsets.all(0),
                   itemBuilder: (context, index) {
-                    return DoctorsTile(doctorDetails: doctorDetails.data[index],);
+                    return DoctorsTile(
+                      doctorDetails: doctorDetails.data[index],
+                    );
                   },
                   separatorBuilder: (context, index) {
                     return Divider();

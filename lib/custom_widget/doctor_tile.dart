@@ -13,7 +13,7 @@ class DoctorsTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: ()async{
+      onTap: () async {
         await Navigator.push(
           context,
           MaterialPageRoute(

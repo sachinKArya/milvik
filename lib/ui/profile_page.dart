@@ -23,6 +23,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   bool _showLoader = false;
   bool editable = false;
+  bool _updatedProfilePic = false;
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
   TextEditingController genderController = TextEditingController();
@@ -31,6 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
   TextEditingController bloodGroupController = TextEditingController();
   TextEditingController heightController = TextEditingController();
   TextEditingController weightController = TextEditingController();
+  File croppedFile;
 
   @override
   void initState() {
@@ -176,28 +178,52 @@ class _ProfilePageState extends State<ProfilePage> {
                   alignment: Alignment.topCenter,
                   child: Stack(
                     children: [
-                      CachedNetworkImage(
-                        imageUrl: widget.doctorDetails["profile_pic"],
-                        imageBuilder: (context, imageProvider) => CircleAvatar(
-                          backgroundImage: imageProvider,
-                          radius: 45,
-                        ),
-                        errorWidget: (context, url, error) => CircleAvatar(
-                          backgroundImage:
-                              AssetImage("assets/images/bima_logo.png"),
-                        ),
-                        fit: BoxFit.fill,
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) => Center(
-                          child: SizedBox(
-                            height: 25,
-                            width: 25,
-                            child: CircularProgressIndicator(
-                              value: downloadProgress.progress,
-                              strokeWidth: 0.5,
-                            ),
-                          ),
-                        ),
+                      InkWell(
+                        child: _updatedProfilePic
+                            ? CircleAvatar(
+                                backgroundImage: FileImage(
+                                croppedFile,
+                              ))
+                            : CachedNetworkImage(
+                                imageUrl: widget.doctorDetails["profile_pic"],
+                                imageBuilder: (context, imageProvider) =>
+                                    CircleAvatar(
+                                  backgroundImage: imageProvider,
+                                  radius: 45,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    CircleAvatar(
+                                  backgroundImage:
+                                      AssetImage("assets/images/bima_logo.png"),
+                                ),
+                                fit: BoxFit.fill,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) => Center(
+                                  child: SizedBox(
+                                    height: 25,
+                                    width: 25,
+                                    child: CircularProgressIndicator(
+                                      value: downloadProgress.progress,
+                                      strokeWidth: 0.5,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        onTap: () async {
+                          var result = await showCupertinoModalPopup(
+                            context: context,
+                            builder: (context) => myActionSheet(context),
+                          );
+                          if (result != null) {
+                            setState(() {
+                              _showLoader = true;
+                            });
+                            await updateProfilePhoto(context, result);
+                            setState(() {
+                              _showLoader = false;
+                            });
+                          }
+                        },
                       ),
                       // CircleAvatar(
                       //   backgroundImage: NetworkImage(
@@ -385,6 +411,47 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
   }
+
+  Future updateProfilePhoto(BuildContext context, String imageSource) async {
+    try {
+      var pickedFile;
+      if (imageSource == "Camera") {
+        print("Open Camera");
+        pickedFile = await picker.getImage(source: ImageSource.camera);
+      } else if (imageSource == "Gallery") {
+        print("Open Gallery");
+        pickedFile = await picker.getImage(source: ImageSource.gallery);
+      }
+      if (pickedFile != null && pickedFile.path != null) {
+        croppedFile = await ImageCropper.cropImage(
+          sourcePath: pickedFile.path,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9
+          ],
+          androidUiSettings: AndroidUiSettings(
+              toolbarTitle: 'Cropper',
+              toolbarColor: Colors.deepOrange,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false),
+          iosUiSettings: IOSUiSettings(
+            minimumAspectRatio: 1.0,
+          ),
+          maxWidth: 512,
+          maxHeight: 512,
+        );
+        setState(() {
+          _updatedProfilePic = true;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }
 
 class CustomTextInputBox extends StatelessWidget {
@@ -427,74 +494,27 @@ class CustomTextInputBox extends StatelessWidget {
   }
 }
 
-Future updateProfilePhoto(BuildContext context, String imageSource) async {
-  try {
-    var pickedFile;
-    if (imageSource == "Camera") {
-      print("Open Camera");
-      pickedFile = await picker.getImage(source: ImageSource.camera);
-    } else if (imageSource == "Gallery") {
-      print("Open Gallery");
-      pickedFile = await picker.getImage(source: ImageSource.gallery);
-    }
-    if (pickedFile != null && pickedFile.path != null) {
-      File croppedFile = await ImageCropper.cropImage(
-        sourcePath: pickedFile.path,
-        aspectRatioPresets: [
-          CropAspectRatioPreset.square,
-          CropAspectRatioPreset.ratio3x2,
-          CropAspectRatioPreset.original,
-          CropAspectRatioPreset.ratio4x3,
-          CropAspectRatioPreset.ratio16x9
-        ],
-        androidUiSettings: AndroidUiSettings(
-            toolbarTitle: 'Cropper',
-            toolbarColor: Colors.deepOrange,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false),
-        iosUiSettings: IOSUiSettings(
-          minimumAspectRatio: 1.0,
-        ),
-        maxWidth: 512,
-        maxHeight: 512,
-      );
-
-      //Save Image to firebase
-      // if (croppedFile != null) {
-      //   FirebaseStorage storage = FirebaseStorage.instance;
-      //   Reference ref =
-      //   storage.ref().child("image1" + DateTime.now().toString());
-      //   UploadTask uploadTask = ref.putFile(croppedFile);
-      //
-      //   await uploadTask.then((res) async {
-      //     res.ref.getDownloadURL().then((value) async {
-      //       if (value != null) {
-      //         bool _response = await userRepository
-      //             .updateUserProfileAndBatchesWithProfilePhoto(
-      //             profilePhotoUrl: value);
-      //         if (_response) {
-      //           // ignore: invalid_use_of_protected_member
-      //           _editProfilePageState.setState(() {
-      //             _imageUrl = value;
-      //           });
-      //         } else {
-      //           SnackbarMessages.showErrorSnackbar(context,
-      //               error:
-      //               "Unable to update your profile photo. Please try later.");
-      //         }
-      //       }
-      //     });
-      //   });
-      // } else {
-      //   // SnackbarMessages.showErrorSnackbar(context,
-      //   //     error:
-      //   //     "Not able to process your selected image. Please try later.");
-      // }
-    }
-  } catch (e) {
-    // SnackbarMessages.showErrorSnackbar(context,
-    //     error: "Unable to update your profile photo. Please try later.");
-    print(e.toString());
-  }
+myActionSheet(context) {
+  return CupertinoActionSheet(
+    actions: [
+      CupertinoActionSheetAction(
+        onPressed: () {
+          Navigator.of(context).pop("Camera");
+        },
+        child: Text("Take Photo"),
+      ),
+      CupertinoActionSheetAction(
+        onPressed: () {
+          Navigator.of(context).pop("Gallery");
+        },
+        child: Text("Choose Photo from Gallery"),
+      ),
+    ],
+    cancelButton: CupertinoActionSheetAction(
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+      child: Text("Cancel"),
+    ),
+  );
 }

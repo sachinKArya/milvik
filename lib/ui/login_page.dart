@@ -5,7 +5,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:milvik_flutter_app/common/constants.dart';
 import 'package:milvik_flutter_app/common/reference.dart';
-import 'package:milvik_flutter_app/ui/otp_page.dart';
 
 class LoginPage extends StatelessWidget {
   final TextEditingController _mobileNumberController = TextEditingController();
@@ -111,19 +110,11 @@ class LoginPage extends StatelessWidget {
         ),
         minimumSize: Size(_size.width, 50),
       ),
-      onPressed: (_mobileNumberController.text.length == 10) ? () async {
-        loginRepository.registerUser(fullMobileNumber, context);
-
-
-        // await Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //     builder: (context) => OtpPage(
-        //       mobileNumber: fullMobileNumber,
-        //     ),
-        //   ),
-        // );
-      }: null,
+      onPressed: (_mobileNumberController.text.length == 10)
+          ? () async {
+              loginRepository.registerUser(fullMobileNumber, context);
+            }
+          : null,
       child: Text(
         "Continue",
         style: TextStyle(

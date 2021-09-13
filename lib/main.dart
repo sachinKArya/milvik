@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: GoogleFonts.roboto().fontFamily,
       ),
-      home: /*LoginPage()*/DashboardPage(),
+      home: LoginPage(),
     );
   }
 }
