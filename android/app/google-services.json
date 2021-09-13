@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "206586124631",
+    "project_id": "milvik-app",
+    "storage_bucket": "milvik-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206586124631:android:16004537bbaae394bbc612",
+        "android_client_info": {
+          "package_name": "org.example.milvik_flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "206586124631-5ir89mse0q6dlhdtbin65caprkud17l0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.example.milvik_flutter_app",
+            "certificate_hash": "81a762379cb235dc11227cb8a2e38a28db9a1085"
+          }
+        },
+        {
+          "client_id": "206586124631-1c6if8jidmqjgmp9fv1prbvnpde78co4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDx62KqB-4eKlj38SisF8oM2ruc0s9No6A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "206586124631-1c6if8jidmqjgmp9fv1prbvnpde78co4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
